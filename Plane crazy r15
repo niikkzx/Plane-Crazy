@@ -1,0 +1,459 @@
+local player = game.Players.LocalPlayer
+local char = player.Character
+local Humanoid = player.Character.Humanoid
+local uis = game:GetService("UserInputService")
+local rs = game:GetService("RunService")
+Humanoid.AutomaticScalingEnabled = false
+
+Humanoid.BodyDepthScale.Value = 9
+Humanoid.BodyHeightScale.Value = 9
+Humanoid.BodyProportionScale.Value = 8
+Humanoid.BodyTypeScale.Value =9
+Humanoid.BodyWidthScale.Value = 8
+Humanoid.HeadScale.Value = 9
+local activePlayer = false
+local plrToGrab = nil
+
+local ScreenGui = Instance.new("ScreenGui")
+local TextBox = Instance.new("TextBox")
+
+
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+TextBox.Parent = ScreenGui
+TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BorderSizePixel = 2
+TextBox.Position = UDim2.new(0.411764711, 0, 0.803526461, 0)
+TextBox.Size = UDim2.new(0, 200, 0, 50)
+TextBox.Font = Enum.Font.SourceSansBold
+TextBox.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.PlaceholderText = "Player para agarrar"
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.TextScaled = true
+TextBox.TextSize = 14.000
+TextBox.TextWrapped = true
+
+
+Humanoid.AutomaticScalingEnabled = true
+
+local head
+local seat
+
+local leftfoot
+local rightfoot
+
+local lefthand
+local righthand
+
+local LeftLowerArm
+local RightLowerArm
+
+local LeftLowerLeg
+local RightLowerLeg
+
+local LowerTorso
+local UpperTorso
+
+local LeftUpperArm
+local RightUpperArm
+
+local LeftUpperLeg
+local RightUpperLeg
+
+
+for i,v in pairs(workspace[player.Name.."Aircraft"]:GetChildren()) do
+	if v:FindFirstChild("BlockStd") then
+		v.BlockStd.CanCollide = false
+	end
+
+	if v.Name == "Seat" then
+		seat = v
+		for i,oi in pairs(v:GetChildren()) do
+			if oi:IsA("Part") or oi:IsA("Seat") then
+				oi.CanCollide = false
+			end
+		end
+	end
+
+	if v.Name == "BlockStd" then
+
+		if v.BlockStd.Color == Color3.fromRGB(131, 65, 0) then
+			head = v.BlockStd
+
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(0, 0, 0) then
+			leftfoot = v.BlockStd
+
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(0, 170, 0) then
+			rightfoot = v.BlockStd
+
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(0, 85, 255) then
+			lefthand = v.BlockStd
+
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(255, 255, 0) then
+			righthand = v.BlockStd
+		end
+
+
+
+		if v.BlockStd.Color == Color3.fromRGB(255, 170, 255) then
+			LeftLowerArm = v.BlockStd
+		end
+		if v.BlockStd.Color == Color3.fromRGB(170, 170, 127) then
+			RightLowerArm = v.BlockStd
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(0, 85, 127) then
+			LeftLowerLeg = v.BlockStd
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(170, 255, 0) then
+			RightLowerLeg = v.BlockStd
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(255, 0, 0) then
+			LowerTorso = v.BlockStd
+		end
+		if v.BlockStd.Color == Color3.fromRGB(255, 85, 255) then
+			UpperTorso = v.BlockStd
+		end
+
+
+		if v.BlockStd.Color == Color3.fromRGB(205, 84, 75) then
+			LeftUpperArm = v.BlockStd
+		end
+		if v.BlockStd.Color == Color3.fromRGB(75, 151, 75) then
+			RightUpperArm = v.BlockStd
+		end
+
+		if v.BlockStd.Color == Color3.fromRGB(0,255,0) then
+			LeftUpperLeg = v.BlockStd
+		end
+		if v.BlockStd.Color == Color3.fromRGB(0,0,255) then
+			RightUpperLeg = v.BlockStd
+		end
+
+	end
+
+end
+
+wait(1)
+
+local bodyseat = Instance.new("BodyPosition",seat.Seat)
+bodyseat.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyseat.P = 100000000
+bodyseat.D = 10000
+
+local bodyseatr = Instance.new("BodyGyro",seat.Seat)
+bodyseatr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyseatr.P = 100000000
+bodyseatr.D = 10000
+
+local bodyHeadr = Instance.new("BodyGyro",head)
+bodyHeadr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyHeadr.P = 100000000
+bodyHeadr.D = 10000
+
+
+local bodyleftfootr = Instance.new("BodyGyro",leftfoot)
+local bodyrightfootr = Instance.new("BodyGyro",rightfoot)
+bodyleftfootr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyrightfootr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyleftfootr.P = 100000000
+bodyleftfootr.D = 10000
+bodyrightfootr.P = 100000000
+bodyrightfootr.D = 10000
+
+local bodylefthandr = Instance.new("BodyGyro",lefthand)
+local bodyrighthandr = Instance.new("BodyGyro",righthand)
+bodylefthandr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyrighthandr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+
+bodyrighthandr.P = 100000000
+bodyrighthandr.D = 10000
+bodylefthandr.P = 100000000
+bodylefthandr.D = 10000
+
+local bodyLeftLowerArmr = Instance.new("BodyGyro",LeftLowerArm)
+local bodyRightLowerArmr = Instance.new("BodyGyro", RightLowerArm)
+bodyLeftLowerArmr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightLowerArmr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+
+bodyLeftLowerArmr.P = 100000000
+bodyLeftLowerArmr.D = 10000
+bodyRightLowerArmr.P = 100000000
+bodyRightLowerArmr.D = 10000
+
+local bodyLeftLowerLegr = Instance.new("BodyGyro",LeftLowerLeg)
+local bodyRightLowerLegr = Instance.new("BodyGyro", RightLowerLeg)
+bodyLeftLowerLegr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightLowerLegr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyLeftLowerLegr.P = 100000000
+bodyLeftLowerLegr.D = 10000
+bodyRightLowerLegr.P = 100000000
+bodyRightLowerLegr.D = 10000
+
+
+
+local bodyLowerTorsor = Instance.new("BodyGyro",LowerTorso)
+local bodyUpperTorsor = Instance.new("BodyGyro", UpperTorso)
+bodyLowerTorsor.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyUpperTorsor.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyLowerTorsor.P = 100000000
+bodyLowerTorsor.D = 10000
+bodyUpperTorsor.P = 100000000
+bodyUpperTorsor.D = 10000
+
+
+local bodyLeftUpperArmr = Instance.new("BodyGyro",LeftUpperArm)
+local bodyRightUpperArmr = Instance.new("BodyGyro", RightUpperArm)
+bodyLeftUpperArmr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightUpperArmr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+
+bodyLeftUpperArmr.P = 100000000
+bodyLeftUpperArmr.D = 10000
+bodyRightUpperArmr.P = 100000000
+bodyRightUpperArmr.D = 10000
+
+
+
+local bodyLeftUpperLegr = Instance.new("BodyGyro",LeftUpperLeg)
+local bodyRightUpperLegr = Instance.new("BodyGyro", RightUpperLeg)
+
+bodyLeftUpperLegr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightUpperLegr.MaxTorque = Vector3.new(10000000000,10000000000,10000000000)
+
+
+
+bodyLeftUpperLegr.P = 100000000
+bodyLeftUpperLegr.D = 10000
+bodyRightUpperLegr.P = 100000000
+bodyRightUpperLegr.D = 10000
+
+
+
+
+
+
+
+local bodyHead = Instance.new("BodyPosition",head)
+bodyHead.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyHead.P = 100000000
+bodyHead.D = 10000
+
+local bodyleftfoot = Instance.new("BodyPosition",leftfoot)
+local bodyrightfoot = Instance.new("BodyPosition",rightfoot)
+bodyleftfoot.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyrightfoot.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyleftfoot.P = 100000000
+bodyleftfoot.D = 10000
+bodyrightfoot.P = 100000000
+bodyrightfoot.D = 10000
+
+local bodylefthand = Instance.new("BodyPosition",lefthand)
+local bodyrighthand = Instance.new("BodyPosition",righthand)
+bodylefthand.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyrighthand.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodylefthand.P = 100000000
+bodylefthand.D = 10000
+bodyrighthand.P = 100000000
+bodyrighthand.D = 10000
+
+
+local bodyLeftLowerArm = Instance.new("BodyPosition",LeftLowerArm)
+local bodyRightLowerArm = Instance.new("BodyPosition", RightLowerArm)
+bodyLeftLowerArm.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightLowerArm.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyLeftLowerArm.P = 100000000
+bodyLeftLowerArm.D = 10000
+bodyRightLowerArm.P = 100000000
+bodyRightLowerArm.D = 10000
+
+
+local bodyLeftLowerLeg = Instance.new("BodyPosition",LeftLowerLeg)
+local bodyRightLowerLeg = Instance.new("BodyPosition", RightLowerLeg)
+bodyLeftLowerLeg.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightLowerLeg.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+
+bodyLeftLowerLeg.P = 100000000
+bodyLeftLowerLeg.D = 10000
+bodyRightLowerLeg.P = 100000000
+bodyRightLowerLeg.D = 10000
+
+local bodyLowerTorso = Instance.new("BodyPosition",LowerTorso)
+local bodyUpperTorso = Instance.new("BodyPosition", UpperTorso)
+bodyLowerTorso.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyUpperTorso.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyUpperTorso.P = 100000000
+bodyUpperTorso.D = 10000
+bodyLowerTorso.P = 100000000
+bodyLowerTorso.D = 10000
+
+
+local bodyLeftUpperArm = Instance.new("BodyPosition",LeftUpperArm)
+local bodyRightUpperArm = Instance.new("BodyPosition", RightUpperArm)
+bodyLeftUpperArm.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightUpperArm.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+bodyLeftUpperArm.P = 100000000
+bodyLeftUpperArm.D = 10000
+bodyRightUpperArm.P = 100000000
+bodyRightUpperArm.D = 10000
+
+local bodyLeftUpperLeg = Instance.new("BodyPosition",LeftUpperLeg)
+local bodyRightUpperLeg = Instance.new("BodyPosition", RightUpperLeg)
+
+bodyLeftUpperLeg.P = 100000000
+bodyLeftUpperLeg.D = 10000
+bodyRightUpperLeg.P = 100000000
+bodyRightUpperLeg.D = 10000
+
+bodyLeftUpperLeg.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+bodyRightUpperLeg.MaxForce = Vector3.new(10000000000,10000000000,10000000000)
+
+player:GetMouse().KeyDown:Connect(function(k)
+	if k == "q" then
+
+		if activePlayer == false then
+			activePlayer = true
+
+		else
+			activePlayer = false
+
+		end
+
+
+	end
+end)
+
+rs.RenderStepped:Connect(function()
+	
+	plrToGrab = TextBox.Text
+	
+	if activePlayer == true then
+		if workspace:FindFirstChild(plrToGrab) then
+			if seat.Seat.Occupant == nil then
+				
+				bodyseat.Position = workspace:FindFirstChild(plrToGrab).HumanoidRootPart.Position
+				
+				CFrame.fromOrientation(0,0,0)
+
+			else
+				bodyseat.Position = char.RightHand.Position
+				bodyseatr.CFrame = char.RightHand.CFrame
+			end
+		end
+	else
+		bodyseatr.CFrame = CFrame.fromOrientation(0,0,0)
+	end
+	
+end)
+
+rs.RenderStepped:Connect(function()
+
+
+	bodyHeadr.CFrame = char.Head.CFrame
+
+	bodyleftfootr.CFrame = char.LeftFoot.CFrame
+	bodyrightfootr.CFrame = char.RightFoot.CFrame
+
+
+
+	bodylefthandr.CFrame = char.LeftHand.CFrame
+	bodyrighthandr.CFrame = char.RightHand.CFrame
+
+
+
+
+	bodyLeftLowerArmr.CFrame = char.LeftLowerArm.CFrame
+	bodyRightLowerArmr.CFrame = char.RightLowerArm.CFrame
+
+
+
+
+	bodyLeftLowerLegr.CFrame = char.LeftLowerLeg.CFrame
+	bodyRightLowerLegr.CFrame = char.RightLowerLeg.CFrame
+
+
+
+
+
+	bodyLowerTorsor.CFrame = char.LowerTorso.CFrame
+	bodyUpperTorsor.CFrame = char.UpperTorso.CFrame
+
+
+
+
+	bodyLeftUpperArmr.CFrame = char.LeftUpperArm.CFrame
+	bodyRightUpperArmr.CFrame = char.RightUpperArm.CFrame
+
+
+	bodyLeftUpperLegr.CFrame = char.LeftUpperLeg.CFrame
+	bodyRightUpperLegr.CFrame = char.RightUpperLeg.CFrame
+
+
+
+
+	bodyHead.Position = char.Head.Position
+
+	bodyleftfoot.Position = char.LeftFoot.Position
+	bodyrightfoot.Position = char.RightFoot.Position
+
+
+
+	bodylefthand.Position = char.LeftHand.Position
+	bodyrighthand.Position = char.RightHand.Position
+
+
+
+
+	bodyLeftLowerArm.Position = char.LeftLowerArm.Position
+	bodyRightLowerArm.Position = char.RightLowerArm.Position
+
+
+
+
+	bodyLeftLowerLeg.Position = char.LeftLowerLeg.Position
+	bodyRightLowerLeg.Position = char.RightLowerLeg.Position
+
+
+
+
+
+	bodyLowerTorso.Position = char.LowerTorso.Position
+	bodyUpperTorso.Position = char.UpperTorso.Position
+
+
+
+
+	bodyLeftUpperArm.Position = char.LeftUpperArm.Position
+	bodyRightUpperArm.Position = char.RightUpperArm.Position
+
+
+	bodyLeftUpperLeg.Position = char.LeftUpperLeg.Position
+	bodyRightUpperLeg.Position = char.RightUpperLeg.Position
+
+end)
+
