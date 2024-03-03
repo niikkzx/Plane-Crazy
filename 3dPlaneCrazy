@@ -1,6 +1,7 @@
 local mapFolder = Instance.new("Folder",workspace)
 mapFolder.Name = "Map"
 
+local xasd = ""
 
 local a1 = Instance.new("Part")
 a1.Name = "PlayerCameraPart"
@@ -415,7 +416,7 @@ local function UpdateFrames() -- Render the picture
 		[2] = "booth"
 	}
 
-	game:GetService("ReplicatedStorage").Remotes:FindFirstChild("s+hGFaDxm8wd/CUHJt+RzJ8MaIo="):FireServer(unpack(args))
+	game:GetService("ReplicatedStorage").Remotes:FindFirstChild("xasd"):FireServer(unpack(args))
 
 
 end
