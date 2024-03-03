@@ -1,0 +1,466 @@
+local mapFolder = Instance.new("Folder",workspace)
+mapFolder.Name = "Map"
+
+
+local a1 = Instance.new("Part")
+a1.Name = "PlayerCameraPart"
+a1.Parent = workspace
+a1.Anchored = true
+a1.Size = Vector3.new(1, 1, 1)
+a1.CFrame = CFrame.new(-37, 0.5, -5.8)
+a1.Orientation = Vector3.new(0, 0, 0)
+
+local a2 = Instance.new("Part",mapFolder)
+a2.Size = Vector3.new(1, 1, 58)
+a2.Anchored = true
+a2.CFrame = CFrame.new(-21, 0.5, -17.5)
+a2.Orientation = Vector3.new(0,180,0)
+
+local a3 = Instance.new("Part",mapFolder)
+a3.Size = Vector3.new(1, 1, 58)
+a3.Anchored = true
+a3.CFrame = CFrame.new(-46, 0.5, -42.5)
+a3.Orientation = Vector3.new(0,90,0)
+
+local a4 = Instance.new("Part",mapFolder)
+a4.Size = Vector3.new(1, 1, 58)
+a4.Anchored = true
+a4.CFrame = CFrame.new(-71, 0.5, -17.5)
+a4.Orientation = Vector3.new(0,180,0)
+
+local a5 = Instance.new("Part",mapFolder)
+a5.Size = Vector3.new(1, 1, 58)
+a5.Anchored = true
+a5.CFrame = CFrame.new(-46, 0.5, 7.5)
+a5.Orientation = Vector3.new(0,90,0)
+
+local a6 = Instance.new("Part",mapFolder)
+a6.Size = Vector3.new(8, 1, 1)
+a6.Color = Color3.new(1,0,0)
+a6.Anchored = true
+a6.CFrame = CFrame.new(-33, 0.5, -15.5)
+a6.Orientation = Vector3.new(0,0,0)
+
+local a7 = Instance.new("Part",mapFolder)
+a7.Size = Vector3.new(8, 1, 4)
+a7.Anchored = true
+a7.Color = Color3.new(0,0,1)
+a7.CFrame = CFrame.new(-47.5, 0.5, -21.5)
+a7.Orientation = Vector3.new(0,90,0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local SettingsModule = {
+	CurrentMap = workspace:WaitForChild("Map"), -- The map that will be rendered
+
+	-- Camera
+	CameraPart = workspace:WaitForChild("PlayerCameraPart"), -- The player's camera
+	FieldOfView = 50,
+	RenderDistance = 100, -- How far the game will render your world
+	CameraHeight = 0.5, -- Shifts the camera up the Y axis (0-1)
+
+	-- Picture	
+	Resolution = 50, -- The amount of columns and rays that will be used
+	ObjectHeightMultiplier = 1, -- Extra height for walls and sprites
+
+	-- Graphics
+	ShadingLevel = 1.2, --  Setting this below 1 will brighten certain faces. And setting above 1 will darken certain faces. 1 is no shading
+
+	-- Player
+	DisableRobloxAvatarMovement = true, -- Disabled movement from user's roblox characters
+	PlayerCollisionsEnabled = true, -- Enabled collision for the CameraPart
+	PlayerWalkSpeed = 5,
+	PlayerTurnSpeed = 3,
+}
+
+
+
+local RS = game:GetService("RunService")
+
+local CameraPart = SettingsModule.CameraPart
+local LevelWorkspace = SettingsModule.CurrentMap
+
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+
+repeat wait() until LocalPlayer.Character
+local Character = LocalPlayer.Character
+local Humanoid = Character:WaitForChild("Humanoid")
+local PlayerWalkSpeedPerSecond = SettingsModule.PlayerWalkSpeed
+local PlayerTurnSpeedPerSecond = SettingsModule.PlayerTurnSpeed
+local DisablePlayerMovement = true
+local PlayerCollisionsEnabled = true
+local Event = game:GetService("ReplicatedStorage").Remotes.Paint
+
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local A = Instance.new("TextButton")
+local D = Instance.new("TextButton")
+local S = Instance.new("TextButton")
+local W = Instance.new("TextButton")
+
+local RendererGui = Instance.new("ScreenGui",LocalPlayer.PlayerGui)
+
+
+--Properties:
+
+A.Name = "A"
+A.Parent = RendererGui
+A.Position = UDim2.new(0.00884173252, 0, 0.208333328, 0)
+A.Size = UDim2.new(0, 50, 0, 50)
+A.Text = "A"
+
+D.Name = "D"
+D.Parent =  RendererGui
+D.Position = UDim2.new(0.138815209, 0, 0.208333328, 0)
+D.Size = UDim2.new(0, 50, 0, 50)
+D.Text = "D"
+
+S.Name = "S"
+S.Parent = RendererGui
+S.Position = UDim2.new(0.0751547292, 0, 0.307539672, 0)
+S.Size = UDim2.new(0, 50, 0, 50)
+S.Text = "S"
+
+W.Name = "W"
+W.Parent =RendererGui
+W.Position = UDim2.new(0.0751547292, 0, 0.144841269, 0)
+W.Size = UDim2.new(0, 50, 0, 50)
+W.Text = "W"
+
+
+
+
+
+
+
+
+local KeysBeingPressed = {
+	Up = false,
+	Left = false,
+	Down = false,
+	Right = false,
+}
+
+
+-- Collision
+
+local function CheckForWall(RayLength)
+	local Params = RaycastParams.new()
+	Params.FilterType = Enum.RaycastFilterType.Whitelist
+	Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
+
+	local ViewRayOrigin = CameraPart.Position
+	local ViewRayDirection = CameraPart.CFrame.LookVector * RayLength
+
+	local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
+	if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.CanCollide and PlayerCollisionsEnabled then
+		local HitPart = ViewRay.Instance
+		return true
+	else
+		return false
+	end
+end
+
+
+-- Movement
+
+local function WalkForwards(deltaTime)
+	local deltaSpeed = deltaTime * PlayerWalkSpeedPerSecond
+
+	if not CheckForWall(1) then
+		CameraPart.CFrame = CameraPart.CFrame * CFrame.new(0, 0, -deltaSpeed)
+	end
+end
+
+local function TurnLeft(deltaTime)
+	local deltaSpeed = deltaTime * PlayerTurnSpeedPerSecond
+
+	CameraPart.CFrame = CameraPart.CFrame * CFrame.Angles(0, deltaSpeed, 0)
+end
+
+local function WalkBackwards(deltaTime)
+	local deltaSpeed = deltaTime * PlayerWalkSpeedPerSecond
+
+	if not CheckForWall(-1) then
+		CameraPart.CFrame = CameraPart.CFrame * CFrame.new(0, 0, deltaSpeed)
+	end
+end
+
+local function TurnRight(deltaTime)
+	local deltaSpeed = deltaTime * PlayerTurnSpeedPerSecond
+
+	CameraPart.CFrame = CameraPart.CFrame * CFrame.Angles(0, -deltaSpeed, 0)
+end
+
+
+-- Get inputs
+W.MouseButton1Down:Connect(function()
+	KeysBeingPressed[1] = true
+end)
+
+W.MouseButton1Up:Connect(function()
+	KeysBeingPressed[1] = false
+end)
+
+A.MouseButton1Down:Connect(function()
+	KeysBeingPressed[2] = true
+end)
+
+A.MouseButton1Up:Connect(function()
+	KeysBeingPressed[2] = false
+end)
+
+S.MouseButton1Down:Connect(function()
+	KeysBeingPressed[3] = true
+end)
+
+S.MouseButton1Up:Connect(function()
+	KeysBeingPressed[3] = false
+end)
+
+D.MouseButton1Down:Connect(function()
+	KeysBeingPressed[4] = true
+end)
+
+D.MouseButton1Up:Connect(function()
+	KeysBeingPressed[4] = false
+end)
+
+
+-- Disabled roblox player movement
+
+if DisablePlayerMovement then
+	Humanoid.JumpPower = 0
+	Humanoid.WalkSpeed = 0
+end
+
+
+-- Main loop
+
+local function onRenderStep(deltaTime) -- deltaTime so that the player's walkspeed isn't affected from their FPS
+	if KeysBeingPressed[1] then -- Walk forwards
+		WalkForwards(deltaTime)
+	end
+	if KeysBeingPressed[2] then -- Turn left
+		TurnLeft(deltaTime)
+	end
+	if KeysBeingPressed[3] then -- Walk backwards
+		WalkBackwards(deltaTime)
+	end
+	if KeysBeingPressed[4] then -- Turn right
+		TurnRight(deltaTime)
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local SpritesTable = {}
+
+function Collide(part)
+	local isColliding = false
+
+	-- must have a touch interest for the :GetTouchingParts() method to work
+	local touch = part.Touched:Connect(function() end)
+	local touching = part:GetTouchingParts()
+
+	-- if intersecting with something that isn't part of the model then can't place
+	for i = 1, #touching do
+		if touching[i].Parent.Name == "HoverThruster" then
+			if  touching[i].Size == Vector3.new(0.21,0.66,0.66) then
+				local A_2 = Color3.new(part.Color.R/255, part.Color.G/255, part.Color.B/255)
+				
+				Event:FireServer(touching[i], A_2)
+			else
+				local A_2 = Color3.new(0,0,0)
+				 
+				Event:FireServer(touching[i], A_2)
+			end
+		end
+	end
+
+	-- cleanup and return
+	touch:Disconnect()
+end
+local primaryROver
+
+for i, Frame in ipairs(game.Workspace.PlayerAircraft[LocalPlayer.Name]:GetDescendants()) do
+	if Frame:IsA("UnionOperation") then
+		if Frame.Color == Color3.fromRGB(1,1,1) then
+			primaryROver = Frame
+		end
+	end
+end
+
+
+
+
+local function GenerateFrames() 
+	-- Generate columns
+	for i = 1, SettingsModule.Resolution do
+		
+		-- Main column
+		local Frame = Instance.new("Part")
+		Frame.Anchored = true
+		Frame.Name = "Frame" .. i
+		Frame.Size = Vector3.new(0.9, 2.5, 2.5)
+		Frame.Position = Vector3.new(primaryROver) + Vector3.new(i*2.5,0,0)
+
+		Frame.Parent = workspace.map2
+	end
+	
+end
+
+local function ClearCanvas() -- Clears any old frames
+	for i, Frame in ipairs(game.Workspace.PlayerAircraft[LocalPlayer.Name]:GetDescendants()) do
+		if Frame:IsA("Part") then
+			if Frame.Size == Vector3.new(0.21,0.66,0.66) then
+				local A_2 = Color3.new(0,0,0)
+
+				Event:FireServer(Frame, A_2)
+			end
+		end
+	end
+end
+
+
+function NormalToFace(normalVector, part)
+	
+	local function GetNormalFromFace(part, normalId)
+		return part.CFrame:VectorToWorldSpace(Vector3.FromNormalId(normalId))
+	end
+
+	local TOLERANCE_VALUE = 1 - 0.001
+	local allFaceNormalIds = {
+		Enum.NormalId.Front,
+		Enum.NormalId.Back,
+		Enum.NormalId.Bottom,
+		Enum.NormalId.Top,
+		Enum.NormalId.Left,
+		Enum.NormalId.Right
+	}    
+
+	for _, normalId in pairs(allFaceNormalIds) do
+		-- If the two vectors are almost parallel,
+		if GetNormalFromFace(part, normalId):Dot(normalVector) > TOLERANCE_VALUE then
+			return normalId -- We found it!
+		end
+	end
+
+	return nil -- None found within tolerance.
+
+end
+
+local function UpdateFrames() -- Render the picture
+	local Count = -SettingsModule.Resolution / 2
+	
+	-- Frames
+	for i, Frame in ipairs(workspace.map2:GetChildren()) do
+		if Frame:IsA("Part") then
+			
+			local Params = RaycastParams.new()
+			Params.FilterType = Enum.RaycastFilterType.Whitelist
+			Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
+			
+			local ViewRayOrigin = CameraPart.Position
+			local RayAngle = CFrame.Angles(0, -math.rad((Count * SettingsModule.FieldOfView) / SettingsModule.Resolution), 0)
+			local ViewRayDirection = (CameraPart.CFrame * RayAngle).LookVector * SettingsModule.RenderDistance
+			
+			local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
+			if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
+				local HitPart = ViewRay.Instance
+				--print(ViewRay.Instance)
+				--print(ViewRay.Position)
+				
+				if HitPart:FindFirstChild("Texture") and HitPart.Texture:IsA("ImageLabel") and SettingsModule.TexturesEnabled then
+					if Frame.ImageFrame.Image ~= HitPart.Texture.Image then
+						-- Implement image for texturing
+						Frame.ImageFrame.Image = HitPart.Texture.Image
+					end
+				elseif SettingsModule.TexturesEnabled then
+					Frame.ImageFrame.Image = "" 
+				end
+				
+				local Distance = (ViewRayOrigin - ViewRay.Position).Magnitude
+				
+				
+				Frame.Size = Vector3.new(1.5, (1 / Distance) * 200)
+				
+				-- Shading
+				
+				local Face = NormalToFace(ViewRay.Normal, HitPart)
+				
+				if Face == Enum.NormalId.Right or Face == Enum.NormalId.Left then
+					Frame.Color = Color3.new(HitPart.Color.R / SettingsModule.ShadingLevel, HitPart.Color.G / SettingsModule.ShadingLevel, HitPart.Color.B / SettingsModule.ShadingLevel)
+				else
+					Frame.Color = HitPart.Color
+				end
+				Collide(Frame)
+				
+				
+				-- Debug
+				
+				--local DebugLaser = Instance.new("Part") -- Visualise the rays
+				--DebugLaser.Anchored = true
+				--DebugLaser.Name = "DebugLaser"
+				--DebugLaser.Size = Vector3.new(0.2, 0.2, Distance)
+				--DebugLaser.CFrame = CFrame.new(ViewRayOrigin, ViewRay.Position) * CFrame.new(0, 0, -Distance/2)
+				--DebugLaser.Parent = workspace
+				
+			else
+				Frame.Transparency = 1
+			end
+			
+			Count = Count + 1
+			
+		end
+	end
+
+end
+
+ClearCanvas() -- Just incase.
+
+GenerateFrames() -- Generate all the columns that will be used.
+
+UpdateFrames()
+
+
+RS.RenderStepped:Connect(function(d) -- Always render the picture
+	ClearCanvas()
+	UpdateFrames()
+	onRenderStep(d)
+end)
+
+-- Made by niikkzx
