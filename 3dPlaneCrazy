@@ -412,7 +412,8 @@ end
 UpdateFrames()
 
 
-RS.RenderStepped:Connect(function(d) -- Always render the picture
+RS.RenderStepped:Connect(function(d)
+	task.wait(0.033)-- Always render the picture
 	UpdateFrames()
 	onRenderStep(d)
 end)
