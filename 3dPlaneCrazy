@@ -7,45 +7,45 @@ a1.Name = "PlayerCameraPart"
 a1.Parent = workspace
 a1.Anchored = true
 a1.Size = Vector3.new(1, 1, 1)
-a1.CFrame = CFrame.new(-37, 0.5, -5.8)
+a1.CFrame = CFrame.new(-37, 60, -5.8)
 a1.Orientation = Vector3.new(0, 0, 0)
 
 local a2 = Instance.new("Part",mapFolder)
 a2.Size = Vector3.new(1, 1, 58)
 a2.Anchored = true
-a2.CFrame = CFrame.new(-21, 0.5, -17.5)
+a2.CFrame = CFrame.new(-21,60, -17.5)
 a2.Orientation = Vector3.new(0,180,0)
 
 local a3 = Instance.new("Part",mapFolder)
 a3.Size = Vector3.new(1, 1, 58)
 a3.Anchored = true
-a3.CFrame = CFrame.new(-46, 0.5, -42.5)
+a3.CFrame = CFrame.new(-46, 60, -42.5)
 a3.Orientation = Vector3.new(0,90,0)
 
 local a4 = Instance.new("Part",mapFolder)
 a4.Size = Vector3.new(1, 1, 58)
 a4.Anchored = true
-a4.CFrame = CFrame.new(-71, 0.5, -17.5)
+a4.CFrame = CFrame.new(-71, 60, -17.5)
 a4.Orientation = Vector3.new(0,180,0)
 
 local a5 = Instance.new("Part",mapFolder)
 a5.Size = Vector3.new(1, 1, 58)
 a5.Anchored = true
-a5.CFrame = CFrame.new(-46, 0.5, 7.5)
+a5.CFrame = CFrame.new(-46, 60, 7.5)
 a5.Orientation = Vector3.new(0,90,0)
 
 local a6 = Instance.new("Part",mapFolder)
 a6.Size = Vector3.new(8, 1, 1)
 a6.Color = Color3.new(1,0,0)
 a6.Anchored = true
-a6.CFrame = CFrame.new(-33, 0.5, -15.5)
+a6.CFrame = CFrame.new(-33, 60, -15.5)
 a6.Orientation = Vector3.new(0,0,0)
 
 local a7 = Instance.new("Part",mapFolder)
 a7.Size = Vector3.new(8, 1, 4)
 a7.Anchored = true
 a7.Color = Color3.new(0,0,1)
-a7.CFrame = CFrame.new(-47.5, 0.5, -21.5)
+a7.CFrame = CFrame.new(-47.5, 60, -21.5)
 a7.Orientation = Vector3.new(0,90,0)
 
 
@@ -301,7 +301,7 @@ local tableX = {}
 
 
 function NormalToFace(normalVector, part)
-	
+
 	local function GetNormalFromFace(part, normalId)
 		return part.CFrame:VectorToWorldSpace(Vector3.FromNormalId(normalId))
 	end
@@ -329,94 +329,79 @@ end
 
 local function UpdateFrames() -- Render the picture
 	local Count = -SettingsModule.Resolution / 2
-	
+
 	-- Frames
 	tableX = {}
 	for Frame= 1, SettingsModule.Resolution,1 do
-	
-			
-			local Params = RaycastParams.new()
-			Params.FilterType = Enum.RaycastFilterType.Whitelist
-			Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
-			
-			local ViewRayOrigin = CameraPart.Position
-			local RayAngle = CFrame.Angles(0, -math.rad((Count * SettingsModule.FieldOfView) / SettingsModule.Resolution), 0)
-			local ViewRayDirection = (CameraPart.CFrame * RayAngle).LookVector * SettingsModule.RenderDistance
-			
-			local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
-			if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
-				local HitPart = ViewRay.Instance
-				--print(ViewRay.Instance)
-				--print(ViewRay.Position)
-				
-			
+
+
+		local Params = RaycastParams.new()
+		Params.FilterType = Enum.RaycastFilterType.Whitelist
+		Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
+
+		local ViewRayOrigin = CameraPart.Position
+		local RayAngle = CFrame.Angles(0, -math.rad((Count * SettingsModule.FieldOfView) / SettingsModule.Resolution), 0)
+		local ViewRayDirection = (CameraPart.CFrame * RayAngle).LookVector * SettingsModule.RenderDistance
+
+		local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
+		if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
+			local HitPart = ViewRay.Instance
+			--print(ViewRay.Instance)
+			--print(ViewRay.Position)
+
+
 			local Distance = (ViewRayOrigin - ViewRay.Position).Magnitude
-			
-			 
-				
-				
-		
-			
+
+
+
+
+
+
 			tableX[Frame] = math.round(((1 / Distance) * 200))
-			
-				
-				
-				-- Debug
-				
-				--local DebugLaser = Instance.new("Part") -- Visualise the rays
-				--DebugLaser.Anchored = true
-				--DebugLaser.Name = "DebugLaser"
-				--DebugLaser.Size = Vector3.new(0.2, 0.2, Distance)
-				--DebugLaser.CFrame = CFrame.new(ViewRayOrigin, ViewRay.Position) * CFrame.new(0, 0, -Distance/2)
-				--DebugLaser.Parent = workspace
-				
-			else
-				
-			end
-			
-			Count = Count + 1
-			
-		
+
+
+
+			-- Debug
+
+			--local DebugLaser = Instance.new("Part") -- Visualise the rays
+			--DebugLaser.Anchored = true
+			--DebugLaser.Name = "DebugLaser"
+			--DebugLaser.Size = Vector3.new(0.2, 0.2, Distance)
+			--DebugLaser.CFrame = CFrame.new(ViewRayOrigin, ViewRay.Position) * CFrame.new(0, 0, -Distance/2)
+			--DebugLaser.Parent = workspace
+
+		else
+
+		end
+
+		Count = Count + 1
+
+
 	end
 	local finalstring = ""
 
-	
+
 	for y=1, 33, 1 do
 		local temp_str = ""
 		for x=1, 50, 1 do
-			if tableX[x] > 0 then
-				tableX[x] = tableX[x] - 1
-				temp_str = temp_str .. "📘"
+			if tableX[x] == nil then
 			else
-				temp_str = temp_str .. "🌑"
+				if tableX[x] > 0 then
+					tableX[x] = tableX[x] - 1
+					temp_str = temp_str .. "📘"
+				else
+					temp_str = temp_str .. "🌑"
+				end
 			end
 		end
 		finalstring = finalstring .. temp_str .. "\n"
 	end
 
-	
-	local args = {
-    [1] = {
-        ["textFont"] = Enum.Font.GothamBlack,
-        ["richText"] = true,
-        ["buttonTextFont"] = Enum.Font.GothamBlack,
-        ["strokeColor"] = nil --[[Color3]],
-        ["text"] = finalstring,
-        ["buttonStrokeColor"] = nil --[[Color3]],
-        ["buttonTextColor"] = nil --[[Color3]],
-        ["buttonColor"] = nil --[[Color3]],
-        ["buttonHoverColor"] = nil --[[Color3]],
-        ["strokeOpacity"] = 0.5,
-        ["textColor"] = nil --[[Color3]]
-    },
-    [2] = "booth"
-}
 
-game:GetService("ReplicatedStorage").Remotes:FindFirstChild("s+hGFaDxm8wd/CUHJt+RzJ8MaIo="):FireServer(unpack(args))
-	
+
 
 end
- -- Generate all the columns that will be used.
+-- Generate all the columns that will be used.
 
 UpdateFrames()
 
