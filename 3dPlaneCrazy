@@ -371,7 +371,7 @@ local function UpdateFrames() -- Render the picture
 				--DebugLaser.Parent = workspace
 				
 			else
-				Frame.Transparency = 1
+				
 			end
 			
 			Count = Count + 1
