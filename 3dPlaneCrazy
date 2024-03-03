@@ -395,15 +395,24 @@ local function UpdateFrames() -- Render the picture
 	end
 
 	
-	local updateremote = game:GetService("ReplicatedStorage").CustomiseBooth
-		local args = {
-			[1] = "Update",
-			[2] = {
-				["DescriptionText"] = finalstring,
-				["ImageId"] = 0
-			}
-		}
-		updateremote:FireServer(unpack(args))
+	local args = {
+    [1] = {
+        ["textFont"] = Enum.Font.GothamBlack,
+        ["richText"] = true,
+        ["buttonTextFont"] = Enum.Font.GothamBlack,
+        ["strokeColor"] = nil --[[Color3]],
+        ["text"] = finalstring,
+        ["buttonStrokeColor"] = nil --[[Color3]],
+        ["buttonTextColor"] = nil --[[Color3]],
+        ["buttonColor"] = nil --[[Color3]],
+        ["buttonHoverColor"] = nil --[[Color3]],
+        ["strokeOpacity"] = 0.5,
+        ["textColor"] = nil --[[Color3]]
+    },
+    [2] = "booth"
+}
+
+game:GetService("ReplicatedStorage").Remotes:FindFirstChild("s+hGFaDxm8wd/CUHJt+RzJ8MaIo="):FireServer(unpack(args))
 	
 
 end
