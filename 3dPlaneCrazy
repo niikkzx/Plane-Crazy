@@ -418,7 +418,7 @@ RS.RenderStepped:Connect(function(d)
 	UpdateFrames()
 	wait(0.1)
 	for i,v in pairs(Paints:GetChildren()) do
-		if v:IsA("Frame") then
+		if v:IsA("TextButton") then
 			v.BackgroundColor3 = Color3.new(0,0,0)
 		end
 	end
