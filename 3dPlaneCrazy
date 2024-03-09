@@ -1,52 +1,53 @@
 local mapFolder = Instance.new("Folder",workspace)
 mapFolder.Name = "Map"
 
-local xasd = ""
+
+
 
 local a1 = Instance.new("Part")
 a1.Name = "PlayerCameraPart"
 a1.Parent = workspace
 a1.Anchored = true
 a1.Size = Vector3.new(1, 1, 1)
-a1.CFrame = CFrame.new(-37, 60, -5.8)
+a1.CFrame = CFrame.new(-37, 800, -5.8)
 a1.Orientation = Vector3.new(0, 0, 0)
 
 local a2 = Instance.new("Part",mapFolder)
 a2.Size = Vector3.new(1, 1, 58)
 a2.Anchored = true
-a2.CFrame = CFrame.new(-21,60, -17.5)
+a2.CFrame = CFrame.new(-21,800, -17.5)
 a2.Orientation = Vector3.new(0,180,0)
 
 local a3 = Instance.new("Part",mapFolder)
 a3.Size = Vector3.new(1, 1, 58)
 a3.Anchored = true
-a3.CFrame = CFrame.new(-46, 60, -42.5)
+a3.CFrame = CFrame.new(-46, 800, -42.5)
 a3.Orientation = Vector3.new(0,90,0)
 
 local a4 = Instance.new("Part",mapFolder)
 a4.Size = Vector3.new(1, 1, 58)
 a4.Anchored = true
-a4.CFrame = CFrame.new(-71, 60, -17.5)
+a4.CFrame = CFrame.new(-71, 800, -17.5)
 a4.Orientation = Vector3.new(0,180,0)
 
 local a5 = Instance.new("Part",mapFolder)
 a5.Size = Vector3.new(1, 1, 58)
 a5.Anchored = true
-a5.CFrame = CFrame.new(-46, 60, 7.5)
+a5.CFrame = CFrame.new(-46, 800, 7.5)
 a5.Orientation = Vector3.new(0,90,0)
 
 local a6 = Instance.new("Part",mapFolder)
 a6.Size = Vector3.new(8, 1, 1)
 a6.Color = Color3.new(1,0,0)
 a6.Anchored = true
-a6.CFrame = CFrame.new(-33, 60, -15.5)
+a6.CFrame = CFrame.new(-33, 800, -15.5)
 a6.Orientation = Vector3.new(0,0,0)
 
 local a7 = Instance.new("Part",mapFolder)
 a7.Size = Vector3.new(8, 1, 4)
 a7.Anchored = true
 a7.Color = Color3.new(0,0,1)
-a7.CFrame = CFrame.new(-47.5, 60, -21.5)
+a7.CFrame = CFrame.new(-47.5, 800, -21.5)
 a7.Orientation = Vector3.new(0,90,0)
 
 
@@ -77,7 +78,7 @@ local SettingsModule = {
 	CameraHeight = 0.5, -- Shifts the camera up the Y axis (0-1)
 
 	-- Picture	
-	Resolution = 50, -- The amount of columns and rays that will be used
+	Resolution = 32, -- The amount of columns and rays that will be used
 	ObjectHeightMultiplier = 1, -- Extra height for walls and sprites
 
 	-- Graphics
@@ -109,6 +110,31 @@ local PlayerWalkSpeedPerSecond = SettingsModule.PlayerWalkSpeed
 local PlayerTurnSpeedPerSecond = SettingsModule.PlayerTurnSpeed
 local DisablePlayerMovement = true
 local PlayerCollisionsEnabled = true
+size = 10
+
+
+function GeneratePixels()
+	local a = 0
+	for x=1,1024 do
+		a = a +1
+		
+		fr = Instance.new("Frame")
+		fr.Position = UDim2.new(0,a*size,0,math.floor((x-1)/32)*size)
+		fr.Size = UDim2.new(0,size,0,size)
+		fr.BackgroundColor3 = Color3.new(0,0,0)
+		fr.BorderSizePixel = 0
+		fr.Name = x
+		fr.Parent = script.Parent.Frame
+		fr.ZIndex = 3
+		if a == 32 then
+			a = 0
+		end
+	end
+end
+
+GeneratePixels()
+
+local Paints = LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
 
 
 -- Gui to Lua
@@ -289,7 +315,6 @@ end
 
 
 local SpritesTable = {}
-local tableX = {}
 
 
 
@@ -332,7 +357,6 @@ local function UpdateFrames() -- Render the picture
 	local Count = -SettingsModule.Resolution / 2
 
 	-- Frames
-	tableX = {}
 	for Frame= 1, SettingsModule.Resolution,1 do
 
 
@@ -352,13 +376,29 @@ local function UpdateFrames() -- Render the picture
 
 
 			local Distance = (ViewRayOrigin - ViewRay.Position).Magnitude
+			
+			
+			local Face = NormalToFace(ViewRay.Normal, HitPart)
 
+			local ax = (((1 / Distance) * 200))
+			for z=1,math.floor(ax),1 do
 
-
-
-
-
-			tableX[Frame] = math.round(((1 / Distance) * 200))
+				if Paints:FindFirstChild(Frame+(z-1)*32) then
+					
+					if Face == Enum.NormalId.Right or Face == Enum.NormalId.Left then
+						Paints:FindFirstChild(Frame+(z-1)*32).BackgroundColor3 = Color3.new(HitPart.Color.R / SettingsModule.ShadingLevel, HitPart.Color.G / SettingsModule.ShadingLevel, HitPart.Color.B / SettingsModule.ShadingLevel)
+					else
+						Paints:FindFirstChild(Frame+(z-1)*32).BackgroundColor3 =  HitPart.Color
+					end
+					
+				
+					
+					
+				end
+			end
+			
+			
+			
 
 
 
@@ -374,49 +414,16 @@ local function UpdateFrames() -- Render the picture
 		else
 
 		end
+		
 
 		Count = Count + 1
 
 
 	end
-	local finalstring = ""
-
-
-	for y=1, 33, 1 do
-		local temp_str = ""
-		for x=1, 50, 1 do
-			if tableX[x] == nil then
-			else
-				if tableX[x] > 0 then
-					tableX[x] = tableX[x] - 1
-					temp_str = temp_str .. "📘"
-				else
-					temp_str = temp_str .. "🌑"
-				end
-			end
-		end
-		finalstring = finalstring .. temp_str .. "\n"
-	end
 	
 	
-	local args = {
-		[1] = {
-			["textFont"] = Enum.Font.GothamBlack,
-			["richText"] = true,
-			["buttonTextFont"] = Enum.Font.GothamBlack,
-			["strokeColor"] = nil --[[Color3]],
-			["text"] = finalstring,
-			["buttonStrokeColor"] = nil --[[Color3]],
-			["buttonTextColor"] = nil --[[Color3]],
-			["buttonColor"] = nil --[[Color3]],
-			["buttonHoverColor"] = nil --[[Color3]],
-			["strokeOpacity"] = 0.5,
-			["textColor"] = nil --[[Color3]]
-		},
-		[2] = "booth"
-	}
 
-	game:GetService("ReplicatedStorage").Remotes:FindFirstChild("xasd"):FireServer(unpack(args))
+	
 
 
 end
@@ -428,7 +435,12 @@ UpdateFrames()
 RS.RenderStepped:Connect(function(d)
 	task.wait(0.033)-- Always render the picture
 	UpdateFrames()
+	wait(0.1)
+	for i,v in pairs(script.Parent.Frame:GetChildren()) do
+		v.BackgroundColor3 = Color3.new(0,0,0)
+	end
 	onRenderStep(d)
+	
 end)
 
 -- Made by niikkzx
