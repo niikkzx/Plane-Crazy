@@ -113,26 +113,7 @@ local PlayerCollisionsEnabled = true
 size = 10
 
 
-function GeneratePixels()
-	local a = 0
-	for x=1,1024 do
-		a = a +1
-		
-		fr = Instance.new("Frame")
-		fr.Position = UDim2.new(0,a*size,0,math.floor((x-1)/32)*size)
-		fr.Size = UDim2.new(0,size,0,size)
-		fr.BackgroundColor3 = Color3.new(0,0,0)
-		fr.BorderSizePixel = 0
-		fr.Name = x
-		fr.Parent = script.Parent.Frame
-		fr.ZIndex = 3
-		if a == 32 then
-			a = 0
-		end
-	end
-end
 
-GeneratePixels()
 
 local Paints = LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
 
