@@ -336,7 +336,7 @@ end
 
 local function UpdateFrames() -- Render the picture
 	local Count = -SettingsModule.Resolution / 2
-
+        print("workk")
 	-- Frames
 	for Frame= 1, SettingsModule.Resolution,1 do
 
