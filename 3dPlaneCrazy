@@ -352,7 +352,7 @@ local function UpdateFrames() -- Render the picture
 		local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
 		if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
 			local HitPart = ViewRay.Instance
-			--print(ViewRay.Instance)
+			print(ViewRay.Instance)
 			--print(ViewRay.Position)
 
 
