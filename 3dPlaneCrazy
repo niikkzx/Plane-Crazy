@@ -336,7 +336,7 @@ end
 
 local function UpdateFrames() -- Render the picture
 	local Count = -SettingsModule.Resolution / 2
-        print("workk")
+        
 	-- Frames
 	for Frame= 1, SettingsModule.Resolution,1 do
 
@@ -350,9 +350,10 @@ local function UpdateFrames() -- Render the picture
 		local ViewRayDirection = (CameraPart.CFrame * RayAngle).LookVector * SettingsModule.RenderDistance
 
 		local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
+                print(ViewRay.Instance)
 		if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
 			local HitPart = ViewRay.Instance
-			print(ViewRay.Instance)
+			
 			--print(ViewRay.Position)
 
 
