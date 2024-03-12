@@ -1,430 +1,206 @@
-local mapFolder = Instance.new("Folder",workspace)
-mapFolder.Name = "Map"
 
+local PixelsFrame = game.Players.LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
+-- Controls
 
-
-
-local a1 = Instance.new("Part")
-a1.Name = "PlayerCameraPart"
-a1.Parent = workspace
-a1.Anchored = true
-a1.Size = Vector3.new(1, 1, 1)
-a1.CFrame = CFrame.new(-37, 800, -5.8)
-a1.Orientation = Vector3.new(0, 0, 0)
-
-local a2 = Instance.new("Part",mapFolder)
-a2.Size = Vector3.new(1, 1, 58)
-a2.Anchored = true
-a2.CFrame = CFrame.new(-21,800, -17.5)
-a2.Orientation = Vector3.new(0,180,0)
-
-local a3 = Instance.new("Part",mapFolder)
-a3.Size = Vector3.new(1, 1, 58)
-a3.Anchored = true
-a3.CFrame = CFrame.new(-46, 800, -42.5)
-a3.Orientation = Vector3.new(0,90,0)
-
-local a4 = Instance.new("Part",mapFolder)
-a4.Size = Vector3.new(1, 1, 58)
-a4.Anchored = true
-a4.CFrame = CFrame.new(-71, 800, -17.5)
-a4.Orientation = Vector3.new(0,180,0)
-
-local a5 = Instance.new("Part",mapFolder)
-a5.Size = Vector3.new(1, 1, 58)
-a5.Anchored = true
-a5.CFrame = CFrame.new(-46, 800, 7.5)
-a5.Orientation = Vector3.new(0,90,0)
-
-local a6 = Instance.new("Part",mapFolder)
-a6.Size = Vector3.new(8, 1, 1)
-a6.Color = Color3.new(1,0,0)
-a6.Anchored = true
-a6.CFrame = CFrame.new(-33, 800, -15.5)
-a6.Orientation = Vector3.new(0,0,0)
-
-local a7 = Instance.new("Part",mapFolder)
-a7.Size = Vector3.new(8, 1, 4)
-a7.Anchored = true
-a7.Color = Color3.new(0,0,1)
-a7.CFrame = CFrame.new(-47.5, 800, -21.5)
-a7.Orientation = Vector3.new(0,90,0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local SettingsModule = {
-	CurrentMap = workspace:WaitForChild("Map"), -- The map that will be rendered
-
-	-- Camera
-	CameraPart = workspace:WaitForChild("PlayerCameraPart"), -- The player's camera
-	FieldOfView = 50,
-	RenderDistance = 100, -- How far the game will render your world
-	CameraHeight = 0.5, -- Shifts the camera up the Y axis (0-1)
-
-	-- Picture	
-	Resolution = 32, -- The amount of columns and rays that will be used
-	ObjectHeightMultiplier = 1, -- Extra height for walls and sprites
-
-	-- Graphics
-	ShadingLevel = 1.2, --  Setting this below 1 will brighten certain faces. And setting above 1 will darken certain faces. 1 is no shading
-
-	-- Player
-	DisableRobloxAvatarMovement = true, -- Disabled movement from user's roblox characters
-	PlayerCollisionsEnabled = true, -- Enabled collision for the CameraPart
-	PlayerWalkSpeed = 5,
-	PlayerTurnSpeed = 3,
-}
-
-
-
-local RS = game:GetService("RunService")
-
-local CameraPart = SettingsModule.CameraPart
-local LevelWorkspace = SettingsModule.CurrentMap
-
-local UIS = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-
-local LocalPlayer = Players.LocalPlayer
-
-repeat wait() until LocalPlayer.Character
-local Character = LocalPlayer.Character
-local Humanoid = Character:WaitForChild("Humanoid")
-local PlayerWalkSpeedPerSecond = SettingsModule.PlayerWalkSpeed
-local PlayerTurnSpeedPerSecond = SettingsModule.PlayerTurnSpeed
-local DisablePlayerMovement = true
-local PlayerCollisionsEnabled = true
-size = 10
-
-
-
-
-local Paints = LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
-
-
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
-local A = Instance.new("TextButton")
+local Buttons = Instance.new("ScreenGui")
 local D = Instance.new("TextButton")
 local S = Instance.new("TextButton")
 local W = Instance.new("TextButton")
+local A = Instance.new("TextButton")
 
-local RendererGui = Instance.new("ScreenGui",LocalPlayer.PlayerGui)
+
+-- SnakeConfig
+local snake = {x = math.random(1,32),y = math.random(1,32)}
+local lenght = 1
+local segments = {snake}
+local snake_dir = {x=0,y=0}
+local food = {x = math.random(1,32),y = math.random(1,32)}
+local dirs = {dW=1,dS=1,dA=1,dD=1}
+-- Time
+time_,time_step = 0,0.1
 
 
---Properties:
+function GeneratePixels()
+	size = 10
+	local a = 0
+	for x=1,1024 do
+		a = a +1
 
-A.Name = "A"
-A.Parent = RendererGui
-A.Position = UDim2.new(0.00884173252, 0, 0.208333328, 0)
-A.Size = UDim2.new(0, 50, 0, 50)
-A.Text = "A"
+		fr = Instance.new("Frame")
+		fr.Position = UDim2.new(0,a*size,0,math.floor((x-1)/32)*size)
+		fr.Size = UDim2.new(0,size,0,size)
+		fr.BackgroundColor3 = Color3.new(0,0,0)
+		fr.BorderSizePixel = 0
+		fr.Name = x
+		fr.Parent = PixelsFrame
+		fr.ZIndex = 3
+		if a == 32 then
+			a = 0
+		end
+	end
+end
+
+local function draw(x,y,color)
+
+	if not PixelsFrame:FindFirstChild(x+(y*32)) then return end
+	PixelsFrame:FindFirstChild(x+(y*32)).BackgroundColor3 = color or Color3.new(1,1,1)
+end
+
+local function fill(color)
+	for i,v in pairs(PixelsFrame:GetChildren()) do
+		if v:IsA("Frame") or v:IsA("TextButton'") then
+			v.BackgroundColor3 = color or Color3.new()
+		end
+	end
+end
+
+
+--- Controls
+
+
+
+Buttons.Name = "Buttons"
+Buttons.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 D.Name = "D"
-D.Parent =  RendererGui
-D.Position = UDim2.new(0.138815209, 0, 0.208333328, 0)
-D.Size = UDim2.new(0, 50, 0, 50)
+D.Parent = Buttons
+D.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+D.Position = UDim2.new(0.839857638, 0, 0.636904776, 0)
+D.Size = UDim2.new(0, 52, 0, 50)
 D.Text = "D"
+D.TextColor3 = Color3.fromRGB(255, 255, 255)
+D.TextScaled = true
 
 S.Name = "S"
-S.Parent = RendererGui
-S.Position = UDim2.new(0.0751547292, 0, 0.307539672, 0)
-S.Size = UDim2.new(0, 50, 0, 50)
+S.Parent = Buttons
+S.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+S.Position = UDim2.new(0.793594301, 0, 0.736111104, 0)
+S.Size = UDim2.new(0, 52, 0, 50)
 S.Text = "S"
+S.TextColor3 = Color3.fromRGB(255, 255, 255)
+S.TextScaled = true
+
 
 W.Name = "W"
-W.Parent =RendererGui
-W.Position = UDim2.new(0.0751547292, 0, 0.144841269, 0)
-W.Size = UDim2.new(0, 50, 0, 50)
+W.Parent = Buttons
+W.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+W.Position = UDim2.new(0.793594301, 0, 0.537698388, 0)
+W.Size = UDim2.new(0, 52, 0, 50)
 W.Text = "W"
+W.TextColor3 = Color3.fromRGB(255, 255, 255)
+W.TextScaled = true
+
+A.Name = "A"
+A.Parent = Buttons
+A.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+A.Position = UDim2.new(0.747330964, 0, 0.636904776, 0)
+A.Size = UDim2.new(0, 52, 0, 50)
+A.Text = "A"
+A.TextColor3 = Color3.fromRGB(255, 255, 255)
+A.TextScaled = true
 
 
-
-
-
-
-
-
-local KeysBeingPressed = {
-	Up = false,
-	Left = false,
-	Down = false,
-	Right = false,
-}
-
-
--- Collision
-
-local function CheckForWall(RayLength)
-	local Params = RaycastParams.new()
-	Params.FilterType = Enum.RaycastFilterType.Whitelist
-	Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
-
-	local ViewRayOrigin = CameraPart.Position
-	local ViewRayDirection = CameraPart.CFrame.LookVector * RayLength
-
-	local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
-	if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.CanCollide and PlayerCollisionsEnabled then
-		local HitPart = ViewRay.Instance
-		return true
-	else
-		return false
+W.MouseButton1Click:Connect(function()
+	if dirs.dW == 1 then
+		snake_dir = {x = 0,y = -1}
+		dirs = {dW=1,dS=0,dA=1,dD=1}
 	end
-end
-
-
--- Movement
-
-local function WalkForwards(deltaTime)
-	local deltaSpeed = deltaTime * PlayerWalkSpeedPerSecond
-
-	if not CheckForWall(1) then
-		CameraPart.CFrame = CameraPart.CFrame * CFrame.new(0, 0, -deltaSpeed)
+	
+end)
+S.MouseButton1Click:Connect(function()
+	if dirs.dS == 1 then
+		snake_dir = {x = 0,y = 1}
+		 dirs = {dW=0,dS=1,dA=1,dD=1}
 	end
-end
 
-local function TurnLeft(deltaTime)
-	local deltaSpeed = deltaTime * PlayerTurnSpeedPerSecond
 
-	CameraPart.CFrame = CameraPart.CFrame * CFrame.Angles(0, deltaSpeed, 0)
-end
-
-local function WalkBackwards(deltaTime)
-	local deltaSpeed = deltaTime * PlayerWalkSpeedPerSecond
-
-	if not CheckForWall(-1) then
-		CameraPart.CFrame = CameraPart.CFrame * CFrame.new(0, 0, deltaSpeed)
+end)
+A.MouseButton1Click:Connect(function()
+	
+	if dirs.dA == 1 then
+		snake_dir = {x = -1,y = 0}
+		dirs = {dW=1,dS=1,dA=1,dD=0}
 	end
-end
+end)
+D.MouseButton1Click:Connect(function()
 
-local function TurnRight(deltaTime)
-	local deltaSpeed = deltaTime * PlayerTurnSpeedPerSecond
-
-	CameraPart.CFrame = CameraPart.CFrame * CFrame.Angles(0, -deltaSpeed, 0)
-end
-
-
--- Get inputs
-W.MouseButton1Down:Connect(function()
-	KeysBeingPressed[1] = true
+	if dirs.dD == 1 then
+		snake_dir = {x = 1,y = 0}
+		dirs = {dW=1,dS=1,dA=0,dD=1}
+	end
 end)
 
-W.MouseButton1Up:Connect(function()
-	KeysBeingPressed[1] = false
-end)
-
-A.MouseButton1Down:Connect(function()
-	KeysBeingPressed[2] = true
-end)
-
-A.MouseButton1Up:Connect(function()
-	KeysBeingPressed[2] = false
-end)
-
-S.MouseButton1Down:Connect(function()
-	KeysBeingPressed[3] = true
-end)
-
-S.MouseButton1Up:Connect(function()
-	KeysBeingPressed[3] = false
-end)
-
-D.MouseButton1Down:Connect(function()
-	KeysBeingPressed[4] = true
-end)
-
-D.MouseButton1Up:Connect(function()
-	KeysBeingPressed[4] = false
-end)
-
-
--- Disabled roblox player movement
-
-if DisablePlayerMovement then
-	Humanoid.JumpPower = 0
-	Humanoid.WalkSpeed = 0
+--Movement Controller
+local function reset()
+	snake = {x = math.random(1,32),y = math.random(1,32)}
+	food = {x = math.random(1,32),y = math.random(1,32)}
+	lenght = 1
+	segments = {snake}
+	snake_dir = {x=0,y=0}
+	dirs = {dW=1,dS=1,dA=1,dD=1}
 end
 
-
--- Main loop
-
-local function onRenderStep(deltaTime) -- deltaTime so that the player's walkspeed isn't affected from their FPS
-	if KeysBeingPressed[1] then -- Walk forwards
-		WalkForwards(deltaTime)
+local function self_eat(set)
+	table.remove(set,#set)
+	for i,v in pairs(set) do
+		if snake.x == v.x and v.y == snake.y then
+			return true
+		end 
 	end
-	if KeysBeingPressed[2] then -- Turn left
-		TurnLeft(deltaTime)
-	end
-	if KeysBeingPressed[3] then -- Walk backwards
-		WalkBackwards(deltaTime)
-	end
-	if KeysBeingPressed[4] then -- Turn right
-		TurnRight(deltaTime)
-	end
+	
+	return false
 end
+GeneratePixels()
+while wait() do
+	fill()
+	
+	local self_eating = self_eat(table.clone(segments))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-local SpritesTable = {}
-
-
-
-
-
-
-
-
-
-
-
-function NormalToFace(normalVector, part)
-
-	local function GetNormalFromFace(part, normalId)
-		return part.CFrame:VectorToWorldSpace(Vector3.FromNormalId(normalId))
+	
+	
+	if self_eating == true then
+		reset()
+	elseif snake.y < 1 then
+		reset()
+	elseif  snake.y > 32 then
+		reset()
+	elseif  snake.x < 1 then
+		reset()
+	elseif snake.x > 32 then
+		reset()
+	
+	end
+	
+	
+	
+	
+	if snake.x == food.x and food.y == snake.y then
+		food = {x = math.random(1,32),y = math.random(1,32)}
+		lenght += 1
+	end
+	
+	draw(food.x,food.y,Color3.new(1,0,0))
+	for i,v in pairs(segments) do
+		draw(v.x,v.y,Color3.new(0,1,0))
 	end
 
-	local TOLERANCE_VALUE = 1 - 0.001
-	local allFaceNormalIds = {
-		Enum.NormalId.Front,
-		Enum.NormalId.Back,
-		Enum.NormalId.Bottom,
-		Enum.NormalId.Top,
-		Enum.NormalId.Left,
-		Enum.NormalId.Right
-	}    
-
-	for _, normalId in pairs(allFaceNormalIds) do
-		-- If the two vectors are almost parallel,
-		if GetNormalFromFace(part, normalId):Dot(normalVector) > TOLERANCE_VALUE then
-			return normalId -- We found it!
-		end
-	end
-
-	return nil -- None found within tolerance.
-
-end
-
-local function UpdateFrames() -- Render the picture
-	local Count = -SettingsModule.Resolution / 2
-        
-	-- Frames
-	for Frame= 1, SettingsModule.Resolution,1 do
-
-
-		local Params = RaycastParams.new()
-		Params.FilterType = Enum.RaycastFilterType.Whitelist
-		Params.FilterDescendantsInstances = LevelWorkspace:GetChildren()
-
-		local ViewRayOrigin = CameraPart.Position
-		local RayAngle = CFrame.Angles(0, -math.rad((Count * SettingsModule.FieldOfView) / SettingsModule.Resolution), 0)
-		local ViewRayDirection = (CameraPart.CFrame * RayAngle).LookVector * SettingsModule.RenderDistance
-
-		local ViewRay = workspace:Raycast(ViewRayOrigin, ViewRayDirection, Params)
-                print(ViewRay.Instance)
-		if ViewRay and ViewRay.Instance and ViewRay.Instance:IsA("BasePart") and ViewRay.Instance.Transparency < 1 then
-			local HitPart = ViewRay.Instance
-			
-			--print(ViewRay.Position)
-
-
-			local Distance = (ViewRayOrigin - ViewRay.Position).Magnitude
-			
-			
-			local Face = NormalToFace(ViewRay.Normal, HitPart)
-
-			local ax = (((1 / Distance) * 200))
-			for z=1,math.floor(ax),1 do
-
-				if Paints:FindFirstChild(Frame+(z-1)*32) then
-					
-					if Face == Enum.NormalId.Right or Face == Enum.NormalId.Left then
-						Paints:FindFirstChild(Frame+(z-1)*32).BackgroundColor3 = Color3.new(HitPart.Color.R / SettingsModule.ShadingLevel, HitPart.Color.G / SettingsModule.ShadingLevel, HitPart.Color.B / SettingsModule.ShadingLevel)
-					else
-						Paints:FindFirstChild(Frame+(z-1)*32).BackgroundColor3 =  HitPart.Color
-					end
-					
-				
-					
-					
-				end
-			end
-			
-			
-			
-
-
-
-			-- Debug
-
-			--local DebugLaser = Instance.new("Part") -- Visualise the rays
-			--DebugLaser.Anchored = true
-			--DebugLaser.Name = "DebugLaser"
-			--DebugLaser.Size = Vector3.new(0.2, 0.2, Distance)
-			--DebugLaser.CFrame = CFrame.new(ViewRayOrigin, ViewRay.Position) * CFrame.new(0, 0, -Distance/2)
-			--DebugLaser.Parent = workspace
-
-		else
-
-		end
+	time_now = tick()
+	if (time_now - time_) > time_step then
+		time_ = time_now
+		local new = {x = snake.x,y= snake.y}
+		new.y += snake_dir.y
+		new.x += snake_dir.x
+		snake = new
+		table.insert(segments,snake)
 		
+		for i = 1 ,#segments - lenght do
+			table.remove(segments,i)
+			
+		end
 
-		Count = Count + 1
-
-
+		
+		
+		
 	end
-	
-	
-
-	
-
 
 end
--- Generate all the columns that will be used.
-
-UpdateFrames()
-
-
-RS.RenderStepped:Connect(function(d)
-	task.wait(0.033)-- Always render the picture
-	UpdateFrames()
-	wait(0.1)
-	for i,v in pairs(Paints:GetChildren()) do
-		if v:IsA("TextButton") then
-			v.BackgroundColor3 = Color3.new(0,0,0)
-		end
-	end
-	onRenderStep(d)
-	
-end)
-
--- Made by niikkzx
