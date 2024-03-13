@@ -48,7 +48,7 @@ end
 
 local function fill(color)
 	for i,v in pairs(PixelsFrame:GetChildren()) do
-		if v:IsA("Frame") or v:IsA("TextButton'") then
+		if v:IsA("Frame") or v:IsA("TextButton") then
 			v.BackgroundColor3 = color or Color3.new()
 		end
 	end
