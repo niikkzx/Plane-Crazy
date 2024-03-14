@@ -1,5 +1,7 @@
 
 local PixelsFrame = game.Players.LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
+local Arts = game.Players.LocalPlayer.PlayerGui.MainGui.ArtFrame.Frames
+local blackFrameId = "be707b14-770a-4747-8259-17eecd99cc2c"
 -- Controls
 
 local Buttons = Instance.new("ScreenGui")
@@ -20,25 +22,6 @@ local dirs = {dW=1,dS=1,dA=1,dD=1}
 time_,time_step = 0,0.1
 
 
-function GeneratePixels()
-	size = 10
-	local a = 0
-	for x=1,1024 do
-		a = a +1
-
-		fr = Instance.new("Frame")
-		fr.Position = UDim2.new(0,a*size,0,math.floor((x-1)/32)*size)
-		fr.Size = UDim2.new(0,size,0,size)
-		fr.BackgroundColor3 = Color3.new(0,0,0)
-		fr.BorderSizePixel = 0
-		fr.Name = x
-		fr.Parent = PixelsFrame
-		fr.ZIndex = 3
-		if a == 32 then
-			a = 0
-		end
-	end
-end
 
 local function draw(x,y,color)
 
@@ -48,12 +31,73 @@ end
 
 local function fill(color)
 	for i,v in pairs(PixelsFrame:GetChildren()) do
-		if v:IsA("Frame") or v:IsA("TextButton") then
+		if v:IsA("Frame") or v:IsA("TextButton'") then
 			v.BackgroundColor3 = color or Color3.new()
 		end
 	end
 end
 
+
+
+local function to_hex(color: Color3): string
+	return string.format("#%02X%02X%02X", color.R * 0xFF,
+		color.G * 0xFF, color.B * 0xFF)
+end
+
+print(string.lower(to_hex(Color3.fromRGB(0,0,0))))
+
+
+
+function GetId()
+	local x = 0
+	local artsFrame = Arts:GetChildren()
+	for i,v in pairs(artsFrame) do
+		if v:IsA("Frame") then
+			if v.Name ~= "Frame" then
+				if x == 0 then
+					x = 1
+				else
+					return v.Name
+				end
+			end
+		end
+	end
+end
+
+function Delete(id)
+	local args = {
+		[1] = id,
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.DeleteArt:FireServer(unpack(args))
+end
+
+function Async(id)
+	local args = {
+		[1] = id,
+		[2] = workspace.Plots:FindFirstChild(game.Players.LocalPlayer.Name).Easels:FindFirstChild("2"),
+		[3] = "NotForSale",
+		[4] = "Starter Frame",
+		[5] = "NotForSale",
+		[6] = "None"
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.ToggleArt:FireServer(unpack(args))
+end
+
+function Post(tabela)
+	local args = {
+		[1] = {
+			["FrameColor"] = "ffffff",
+			["Name"] = "SnakeGame",
+			["Cells"] = tabela,
+			["Frame"] = "Starter Frame",
+			["Textures"] = {},
+		}
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.CreateArt:InvokeServer(unpack(args))
+end
 
 --- Controls
 
@@ -150,7 +194,7 @@ local function self_eat(set)
 	
 	return false
 end
-GeneratePixels()
+
 while wait() do
 	fill()
 	
@@ -183,6 +227,16 @@ while wait() do
 	for i,v in pairs(segments) do
 		draw(v.x,v.y,Color3.new(0,1,0))
 	end
+	
+	local tableFinal = {}
+	
+	for i = 1,1024,1 do
+		table.insert(tableFinal,string.lower(to_hex(PixelsFrame:FindFirstChild(i).BackgroundColor3)))
+	end
+	
+	Post(tableFinal)
+	Async(GetId())
+	
 
 	time_now = tick()
 	if (time_now - time_) > time_step then
@@ -198,9 +252,9 @@ while wait() do
 			
 		end
 
-		
-		
-		
 	end
-
+	
+	
+	Async(blackFrameId)
+	Delete(GetId())
 end
