@@ -192,7 +192,7 @@ local function self_eat(set)
 	return false
 end
 
-while wait(1) do
+while wait(5) do
 	fill()
 	
 	local self_eating = self_eat(table.clone(segments))
@@ -253,8 +253,6 @@ while wait(1) do
 
 	end
 	
-	wait(1)
 	
-	Async(blackFrameId)
-	Delete(GetId())
+	--Delete(GetId())
 end
