@@ -31,7 +31,7 @@ end
 
 local function fill(color)
 	for i,v in pairs(PixelsFrame:GetChildren()) do
-		if v:IsA("Frame") or v:IsA("TextButton'") then
+		if v:IsA("TextButton") then
 			v.BackgroundColor3 = color or Color3.new()
 		end
 	end
@@ -49,14 +49,11 @@ print(string.lower(to_hex(Color3.fromRGB(0,0,0))))
 
 
 function GetId()
-	local x = 0
 	local artsFrame = Arts:GetChildren()
 	for i,v in pairs(artsFrame) do
 		if v:IsA("Frame") then
 			if v.Name ~= "Frame" then
-				if x == 0 then
-					x = 1
-				else
+				if v.Name ~= blackFrameId then
 					return v.Name
 				end
 			end
@@ -195,7 +192,7 @@ local function self_eat(set)
 	return false
 end
 
-while wait() do
+while wait(1) do
 	fill()
 	
 	local self_eating = self_eat(table.clone(segments))
@@ -234,6 +231,8 @@ while wait() do
 		table.insert(tableFinal,string.lower(to_hex(PixelsFrame:FindFirstChild(i).BackgroundColor3)))
 	end
 	
+	print(tableFinal)
+	
 	Post(tableFinal)
 	Async(GetId())
 	
@@ -254,6 +253,7 @@ while wait() do
 
 	end
 	
+	wait(1)
 	
 	Async(blackFrameId)
 	Delete(GetId())
