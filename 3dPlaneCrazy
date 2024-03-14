@@ -178,6 +178,7 @@ local function reset()
 	lenght = 1
 	segments = {snake}
 	snake_dir = {x=0,y=0}
+	
 	dirs = {dW=1,dS=1,dA=1,dD=1}
 end
 
@@ -253,6 +254,8 @@ while wait(5) do
 
 	end
 	
+	wait(3)
 	
-	--Delete(GetId())
+	Async(blackFrameId)
+	Delete(GetId())
 end
