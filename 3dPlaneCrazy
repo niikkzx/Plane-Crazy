@@ -1,5 +1,5 @@
 local Player = game.Players.LocalPlayer
-local PixelsFrame = Player.PlayerGui:FindFirstChild("DrawMenu.V4").Frame.Pixels
+local PixelsFrame = script.Parent.Pixels
 -- Controls
 
 local Buttons = Instance.new("ScreenGui")
@@ -41,6 +41,23 @@ local function fill(color)
 	for i,v in pairs(PixelsFrame:GetChildren()) do
 		if v:IsA("Frame") or v:IsA("TextButton") then
 			v.BackgroundColor3 = color or Color3.new()
+		end
+	end
+end
+
+function GeneratePixels()
+	size = 10
+	for finy = 1,MAPY,1 do
+		for finx = 1,MAPX,1 do
+
+			fr = Instance.new("Frame")
+			fr.Position = UDim2.new(0,finx*size,0,finy*size)
+			fr.Size = UDim2.new(0,size,0,size)
+		fr.BackgroundColor3 = Color3.new(0,0,0)
+		fr.BorderSizePixel = 0
+			fr.Name = "p"..finy.."."..finx
+		fr.Parent = PixelsFrame
+		fr.ZIndex = 3
 		end
 	end
 end
@@ -144,6 +161,9 @@ local function self_eat(set)
 end
 
 
+GeneratePixels()
+
+
 local function Post(tabela)
 	local args = {
 		[1] = {
@@ -157,27 +177,6 @@ local function Post(tabela)
 	}
 
 	game:GetService("ReplicatedStorage").DrawingRemotes.Morph:InvokeServer(unpack(args))
-end
-
-
-local function Save()
-	local finalTable = {}
-	for finy = 1,MAPY,1 do
-		finalTable[finy] = {}
-		for finx = 1,MAPX,1 do
-			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
-			local colorsTable = {
-				["Green"] = pixel.BackgroundColor3.G,
-				["Blue"] = pixel.BackgroundColor3.B,
-				["Red"] = pixel.BackgroundColor3.R
-			}
-
-			finalTable[finy][finx] = colorsTable
-
-		end
-	end
-	
-	Post(finalTable)
 end
 
 
@@ -214,12 +213,27 @@ while wait() do
 	for i,v in pairs(segments) do
 		draw(v.x,v.y,Color3.new(0,1,0))
 	end
-	
+
 	local finalTable = {}
-	
-	
-	
-	task.spawn(Save)
+
+	for finy = 1,MAPY,1 do
+		finalTable[finy] = {}
+		for finx = 1,MAPX,1 do
+			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
+			local colorsTable = {
+				["Green"] = pixel.BackgroundColor3.G,
+				["Blue"] = pixel.BackgroundColor3.B,
+				["Red"] = pixel.BackgroundColor3.R
+			}
+
+			
+			finalTable[finy][finx] = colorsTable
+
+		end
+	end
+
+	--	Post(finalTable)
+	print(finalTable)
 
 
 
