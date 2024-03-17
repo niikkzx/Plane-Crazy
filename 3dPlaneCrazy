@@ -161,7 +161,7 @@ end
 
 
 
-while wait(5) do
+while wait() do
 	fill()
 
 	local self_eating = self_eat(table.clone(segments))
@@ -197,6 +197,7 @@ while wait(5) do
 	local finalTable = {}
 	
 	for finy = 1,MAPY,1 do
+		finalTable[finy] = {}
 		for finx = 1,MAPX,1 do
 			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
 			local colorsTable = {
@@ -205,7 +206,6 @@ while wait(5) do
 				["Red"] = pixel.BackgroundColor3.R
 			}
 			
-			finalTable[finy] = {}
 			finalTable[finy][finx] = colorsTable
 			
 		end
