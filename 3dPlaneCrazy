@@ -1,7 +1,5 @@
-
-local PixelsFrame = game.Players.LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
-local Arts = game.Players.LocalPlayer.PlayerGui.MainGui.ArtFrame.Frames
-local blackFrameId = "be707b14-770a-4747-8259-17eecd99cc2c"
+local Player = game.Players.LocalPlayer
+local PixelsFrame = Player.PlayerGui.DrawMenu.V4.Frame.Pixels
 -- Controls
 
 local Buttons = Instance.new("ScreenGui")
@@ -10,91 +8,44 @@ local S = Instance.new("TextButton")
 local W = Instance.new("TextButton")
 local A = Instance.new("TextButton")
 
+local MAPX = 25
+local MAPY = MAPX
+
 
 -- SnakeConfig
-local snake = {x = math.random(1,32),y = math.random(1,32)}
+local snake = {x = math.random(1,MAPX),y = math.random(1,MAPY)}
 local lenght = 1
 local segments = {snake}
 local snake_dir = {x=0,y=0}
-local food = {x = math.random(1,32),y = math.random(1,32)}
+local food = {x = math.random(1,MAPX),y = math.random(1,MAPY)}
 local dirs = {dW=1,dS=1,dA=1,dD=1}
 -- Time
 time_,time_step = 0,0.1
 
 
 
+--local function olddraw(x,y,color)
+
+--	if not PixelsFrame:FindFirstChild(x+(y*MAPX)) then return end
+--	PixelsFrame:FindFirstChild(x+(y*MAPX)).BackgroundColor3 = color or Color3.new(1,1,1)
+--end
+
 local function draw(x,y,color)
 
-	if not PixelsFrame:FindFirstChild(x+(y*32)) then return end
-	PixelsFrame:FindFirstChild(x+(y*32)).BackgroundColor3 = color or Color3.new(1,1,1)
+	if not PixelsFrame:FindFirstChild("p"..y.."."..x) then return end
+	PixelsFrame:FindFirstChild("p"..y.."."..x).BackgroundColor3 = color or Color3.new(1,1,1)
 end
+
 
 local function fill(color)
 	for i,v in pairs(PixelsFrame:GetChildren()) do
-		if v:IsA("TextButton") then
+		if v:IsA("Frame") or v:IsA("TextButton") then
 			v.BackgroundColor3 = color or Color3.new()
 		end
 	end
 end
 
 
-
-local function to_hex(color: Color3): string
-	return string.format("#%02X%02X%02X", color.R * 0xFF,
-		color.G * 0xFF, color.B * 0xFF)
-end
-
-print(string.lower(to_hex(Color3.fromRGB(0,0,0))))
-
-
-
-function GetId()
-	local artsFrame = Arts:GetChildren()
-	for i,v in pairs(artsFrame) do
-		if v:IsA("Frame") then
-			if v.Name ~= "Frame" then
-				if v.Name ~= blackFrameId then
-					return v.Name
-				end
-			end
-		end
-	end
-end
-
-function Delete(id)
-	local args = {
-		[1] = id,
-	}
-
-	game:GetService("ReplicatedStorage").Remotes.DeleteArt:FireServer(unpack(args))
-end
-
-function Async(id)
-	local args = {
-		[1] = id,
-		[2] = workspace.Plots:FindFirstChild(game.Players.LocalPlayer.Name).Easels:FindFirstChild("2"),
-		[3] = "NotForSale",
-		[4] = "Starter Frame",
-		[5] = "NotForSale",
-		[6] = "None"
-	}
-
-	game:GetService("ReplicatedStorage").Remotes.ToggleArt:FireServer(unpack(args))
-end
-
-function Post(tabela)
-	local args = {
-		[1] = {
-			["FrameColor"] = "ffffff",
-			["Name"] = "SnakeGame",
-			["Cells"] = tabela,
-			["Frame"] = "Starter Frame",
-			["Textures"] = {},
-		}
-	}
-
-	game:GetService("ReplicatedStorage").Remotes.CreateArt:InvokeServer(unpack(args))
-end
 
 --- Controls
 
@@ -146,18 +97,18 @@ W.MouseButton1Click:Connect(function()
 		snake_dir = {x = 0,y = -1}
 		dirs = {dW=1,dS=0,dA=1,dD=1}
 	end
-	
+
 end)
 S.MouseButton1Click:Connect(function()
 	if dirs.dS == 1 then
 		snake_dir = {x = 0,y = 1}
-		 dirs = {dW=0,dS=1,dA=1,dD=1}
+		dirs = {dW=0,dS=1,dA=1,dD=1}
 	end
 
 
 end)
 A.MouseButton1Click:Connect(function()
-	
+
 	if dirs.dA == 1 then
 		snake_dir = {x = -1,y = 0}
 		dirs = {dW=1,dS=1,dA=1,dD=0}
@@ -173,12 +124,11 @@ end)
 
 --Movement Controller
 local function reset()
-	snake = {x = math.random(1,32),y = math.random(1,32)}
-	food = {x = math.random(1,32),y = math.random(1,32)}
+	snake = {x = math.random(1,MAPX),y = math.random(1,MAPY)}
+	food = {x = math.random(1,MAPX),y = math.random(1,MAPY)}
 	lenght = 1
 	segments = {snake}
 	snake_dir = {x=0,y=0}
-	
 	dirs = {dW=1,dS=1,dA=1,dD=1}
 end
 
@@ -189,54 +139,81 @@ local function self_eat(set)
 			return true
 		end 
 	end
-	
+
 	return false
 end
 
+
+local function Post(tabela)
+	local args = {
+		[1] = {
+			["Metadata"] = {
+				["RowCount"] = 25,
+				["ColumnCount"] = 25
+			},
+			["GridMap"] = tabela
+		},
+		[2] = ""
+	}
+
+	game:GetService("ReplicatedStorage").DrawingRemotes.Morph:InvokeServer(unpack(args))
+end
+
+
+
 while wait(5) do
 	fill()
-	
+
 	local self_eating = self_eat(table.clone(segments))
 
-	
-	
+
+
 	if self_eating == true then
 		reset()
-	elseif snake.y < 1 then
+	elseif snake.y < 0 then
 		reset()
-	elseif  snake.y > 32 then
+	elseif  snake.y >= MAPY then
 		reset()
 	elseif  snake.x < 1 then
 		reset()
-	elseif snake.x > 32 then
+	elseif snake.x > MAPX then
 		reset()
-	
+
 	end
-	
-	
-	
-	
+
+
+
+
 	if snake.x == food.x and food.y == snake.y then
-		food = {x = math.random(1,32),y = math.random(1,32)}
+		food = {x = math.random(1,MAPX),y = math.random(1,MAPY)}
 		lenght += 1
 	end
-	
+
 	draw(food.x,food.y,Color3.new(1,0,0))
 	for i,v in pairs(segments) do
 		draw(v.x,v.y,Color3.new(0,1,0))
 	end
 	
-	local tableFinal = {}
+	local finalTable = {}
 	
-	for i = 1,1024,1 do
-		table.insert(tableFinal,string.lower(to_hex(PixelsFrame:FindFirstChild(i).BackgroundColor3)))
+	for finy = 1,MAPY,1 do
+		for finx = 1,MAPX,1 do
+			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
+			local colorsTable = {
+				["Green"] = pixel.BackgroundColor3.G,
+				["Blue"] = pixel.BackgroundColor3.B,
+				["Red"] = pixel.BackgroundColor3.R
+			}
+			
+			finalTable[finy] = {}
+			finalTable[finy][finx] = colorsTable
+			
+		end
 	end
 	
-	print(tableFinal)
-	
-	Post(tableFinal)
-	Async(GetId())
-	
+	Post(finalTable)
+
+
 
 	time_now = tick()
 	if (time_now - time_) > time_step then
@@ -246,16 +223,11 @@ while wait(5) do
 		new.x += snake_dir.x
 		snake = new
 		table.insert(segments,snake)
-		
+
 		for i = 1 ,#segments - lenght do
 			table.remove(segments,i)
-			
-		end
 
+		end
 	end
-	
-	wait(3)
-	
-	Async(blackFrameId)
-	Delete(GetId())
+
 end
