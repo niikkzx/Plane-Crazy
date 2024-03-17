@@ -160,6 +160,27 @@ local function Post(tabela)
 end
 
 
+local function Save()
+	local finalTable = {}
+	for finy = 1,MAPY,1 do
+		finalTable[finy] = {}
+		for finx = 1,MAPX,1 do
+			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
+			local colorsTable = {
+				["Green"] = pixel.BackgroundColor3.G,
+				["Blue"] = pixel.BackgroundColor3.B,
+				["Red"] = pixel.BackgroundColor3.R
+			}
+
+			finalTable[finy][finx] = colorsTable
+
+		end
+	end
+	
+	Post(finalTable)
+end
+
+
 
 while wait() do
 	fill()
@@ -196,22 +217,9 @@ while wait() do
 	
 	local finalTable = {}
 	
-	for finy = 1,MAPY,1 do
-		finalTable[finy] = {}
-		for finx = 1,MAPX,1 do
-			local pixel = PixelsFrame:FindFirstChild("p"..finy.."."..finx)
-			local colorsTable = {
-				["Green"] = pixel.BackgroundColor3.G,
-				["Blue"] = pixel.BackgroundColor3.B,
-				["Red"] = pixel.BackgroundColor3.R
-			}
-			
-			finalTable[finy][finx] = colorsTable
-			
-		end
-	end
 	
-	Post(finalTable)
+	
+	task.spawn(Save)
 
 
 
