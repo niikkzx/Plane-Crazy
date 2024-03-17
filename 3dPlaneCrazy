@@ -1,5 +1,5 @@
 local Player = game.Players.LocalPlayer
-local PixelsFrame = Player.PlayerGui.DrawMenu.V4.Frame.Pixels
+local PixelsFrame = Player.PlayerGu:FindFirstChild("DrawMenu.V4").Frame.Pixels
 -- Controls
 
 local Buttons = Instance.new("ScreenGui")
