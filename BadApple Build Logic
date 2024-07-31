@@ -1,0 +1,51 @@
+local txt = game:HttpGet("https://raw.githubusercontent.com/niikkzx/Plane-Crazy/main/badapple")
+local Blocs = workspace.Blocs
+local Eb = Blocs:WaitForChild("Empty Block").Box
+local splitedPart = string.split(txt,"N")
+
+
+
+xSize = 51
+ySize = 39
+
+local function draw(x,y,color)
+   Blocs:WaitForChild(x.."/"..y):WaitForChild("Box").Bloc.Color = color
+end
+
+function Load()
+	for i,v in pairs(Blocs:GetChildren()) do
+		local distance = (v.Box.Position - Eb.Position)
+		v.Name = (distance.X / 3+1).."/"..math.round( (-(distance.Y / 3 + 1))+ySize+1 )
+	end
+end
+
+local size = xSize
+
+Load()
+
+
+
+local function toTable(s)
+	local t = {}
+	s:gsub(".", function(c) table.insert(t, c) return c end)
+	return t
+end
+
+for i,v in pairs(splitedPart) do
+	wait(0)
+
+	for l = 0,ySize-1,1 do
+		local verticalString = string.sub(v,size*l+1,size*(l+1))
+		local verticalTable = toTable(verticalString)
+		for letter,q in pairs(verticalTable) do
+			if q == "B" then
+				draw(letter,l+1,Color3.new())
+			elseif q == "A" then
+				draw(letter,l+1,Color3.new(1,1,1))
+			
+			end
+		end
+	end
+end
+
+
