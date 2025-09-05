@@ -1,4 +1,4 @@
-print("Oi")
+print("asdOi")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = game:GetService("Players").LocalPlayer
 local mouse = player:GetMouse()
