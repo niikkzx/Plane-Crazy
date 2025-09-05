@@ -1,0 +1,86 @@
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = game:GetService("Players").LocalPlayer
+local mouse = player:GetMouse()
+local base = workspace:WaitForChild("PIayerAircraft"):FindFirstChild(player.Name)
+local buildingZones = workspace:WaitForChild("BuildingZones")
+
+-- Tabela de blocos com nome, peso e referência
+local blocos = {
+	{Name = "BlockStd", Mass = 4.375, ID = 1},
+}
+
+local pesos = {}
+
+for _, bloco in ipairs(blocos) do
+	table.insert(pesos, bloco.Mass)
+end
+
+local plrlocation = nil
+for i,v in pairs(buildingZones:GetChildren()) do
+	if v.SurfaceGui.PlayerName.Text == player.Name then
+		plrlocation = v
+		break
+	end
+end
+
+
+local function findBlock(pesoProcurado)
+	local index = table.find(pesos, pesoProcurado)
+	if index then
+		return blocos[index] 
+	end
+	return nil
+end
+
+
+local function PlaceBlock(block)
+	firesignal(mouse.Button1Down)
+	local item = base.ChildAdded:Wait()
+	
+	return item
+	
+	
+end
+
+local function calculatePosition(block,plrbase)
+	local X1 = block.CFrame.X - plrbase.CFrame.X
+	local Y1 = block.CFrame.Y - plrbase.CFrame.Y
+	local Z1 = block.CFrame.Z - plrbase.CFrame.Z
+	local X = math.round(X1 / 2.5)
+	local Y = math.round(Y1 / 2.5)
+	local Z = math.round(Z1 / 2.5)
+	
+	return X,Y,Z
+end
+
+
+local function copyBase(plrToCopy)
+	local base = workspace:WaitForChild("PIayerAircraft"):FindFirstChild(plrToCopy)
+	if not base then return end
+	
+	local partLocation = nil
+	for i,v in pairs(buildingZones:GetChildren()) do
+		if v.SurfaceGui.PlayerName.Text == plrToCopy then
+			partLocation = v
+			break
+		end
+	end
+	
+	local blocksBase = base:GetChildren()
+	
+	for _,v in pairs(blocksBase) do
+		if v:IsA("Model") then	
+			print("Oi")
+			local block = findBlock(v.PrimaryPart:GetMass())
+			if block then
+				local placedBlock = PlaceBlock()
+				local x1,y1,z1 = calculatePosition(placedBlock.PrimaryPart,plrlocation)
+				local x,y,z = calculatePosition(v.PrimaryPart,partLocation)
+				print(x,y,z)
+				print(x1,y1,z1)
+			end
+		end
+	end
+end
+
+copyBase("niikkzx")
